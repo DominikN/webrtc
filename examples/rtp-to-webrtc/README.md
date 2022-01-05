@@ -10,6 +10,13 @@ export GO111MODULE=on
 go get github.com/pion/webrtc/v3/examples/rtp-to-webrtc
 ```
 
+### Build
+
+```
+go build -o rtp-to-webrtc main.go
+```
+
+
 ### Open jsfiddle example page
 [jsfiddle.net](https://jsfiddle.net/z7ms3u5r/) you should see two text-areas and a 'Start Session' button
 
@@ -34,6 +41,15 @@ gst-launch-1.0 videotestsrc ! video/x-raw,width=640,height=480,format=I420 ! vp8
 ```
 
 #### ffmpeg
+
+camera from laptop:
+
+```
+ffmpeg -f v4l2 -framerate 30 -video_size 640x480 -i /dev/video0 -codec:v libvpx -preset ultrafast -s 640x480 -b:v 1000k -f rtp rtp://127.0.0.1:5004
+```
+
+test:
+
 ```
 ffmpeg -re -f lavfi -i testsrc=size=640x480:rate=30 -vcodec libvpx -cpu-used 5 -deadline 1 -g 10 -error-resilient 1 -auto-alt-ref 1 -f rtp 'rtp://127.0.0.1:5004?pkt_size=1200'
 ```
@@ -49,6 +65,8 @@ If you wish to send H264 instead of VP8 replace all occurrences of `vp8` with H2
 ```
 ffmpeg -re -f lavfi -i testsrc=size=640x480:rate=30 -pix_fmt yuv420p -c:v libx264 -g 10 -preset ultrafast -tune zerolatency -f rtp 'rtp://127.0.0.1:5004?pkt_size=1200'
 ```
+
+
 
 ### Input rtp-to-webrtc's SessionDescription into your browser
 Copy the text that `rtp-to-webrtc` just emitted and copy into second text area
